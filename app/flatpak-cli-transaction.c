@@ -753,9 +753,16 @@ check_current_transaction_for_dependent_apps (GPtrArray          *apps,
       if (flatpak_decomposed_id_is_subref (related_op_decomposed))
         continue;
 
-      /* Recurse in case @ref was a runtime extension */
+      /* Recurse in case @ref was a runtime extension. We need to check since a
+       * runtime can have a runtime extension in its related ops in the
+       * extra-data case.
+       */
       if (flatpak_decomposed_is_runtime (related_op_decomposed))
-        check_current_transaction_for_dependent_apps (apps, transaction, related_op_decomposed);
+        {
+          GKeyFile *metadata = flatpak_transaction_operation_get_metadata (ref_op);
+          if (g_key_file_has_group (metadata, FLATPAK_METADATA_GROUP_EXTENSION_OF))
+            check_current_transaction_for_dependent_apps (apps, transaction, related_op_decomposed);
+        }
       else if (!g_ptr_array_find_with_equal_func (apps, related_op_decomposed, (GEqualFunc)flatpak_decomposed_equal, NULL))
         g_ptr_array_add (apps, g_steal_pointer (&related_op_decomposed));
     }
