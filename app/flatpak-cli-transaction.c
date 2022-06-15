@@ -736,8 +736,7 @@ check_current_transaction_for_dependent_apps (GPtrArray          *apps,
   GPtrArray *related_ops;
 
   ref_op = flatpak_transaction_get_operation_for_ref (transaction, NULL, flatpak_decomposed_get_ref (ref), NULL);
-  if (ref_op == NULL)
-    g_assert_not_reached ();
+  g_assert (ref_op != NULL);
 
   related_ops = flatpak_transaction_operation_get_related_to_ops (ref_op);
   if (related_ops == NULL)
