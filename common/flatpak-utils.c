@@ -9215,6 +9215,7 @@ void
 g_ptr_array_extend_and_steal (GPtrArray  *array_to_extend,
                               GPtrArray  *array)
 {
+  /* Walk @array backwards so we can remove without shuffling pointers around. */
   for (gsize i = array->len; i > 0; i--)
     g_ptr_array_add (array_to_extend, g_ptr_array_steal_index_fast (array, i - 1));
 
